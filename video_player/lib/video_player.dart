@@ -761,17 +761,25 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
           maxBuffering = end;
         }
       }
+      double progress = 0.0;
+      if (duration != 0) {
+        maxBuffering / duration;
+      }
+      double positionIndicator = 0.0;
+      if (duration != 0){
+        positionIndicator = 0.0;
+      }
 
       progressIndicator = Stack(
         fit: StackFit.passthrough,
         children: <Widget>[
           LinearProgressIndicator(
-            value: maxBuffering / duration,
+            value: progress,
             valueColor: AlwaysStoppedAnimation<Color>(colors.bufferedColor),
             backgroundColor: colors.backgroundColor,
           ),
           LinearProgressIndicator(
-            value: position / duration,
+            value: positionIndicator,
             valueColor: AlwaysStoppedAnimation<Color>(colors.playedColor),
             backgroundColor: Colors.transparent,
           ),
