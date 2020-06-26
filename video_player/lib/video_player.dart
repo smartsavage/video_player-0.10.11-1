@@ -763,11 +763,11 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
       }
       double progress = 0.0;
       if (duration != 0) {
-        maxBuffering / duration;
+        progress = maxBuffering / duration;
       }
       double positionIndicator = 0.0;
       if (duration != 0){
-        positionIndicator = 0.0;
+        positionIndicator = position / duration;
       }
 
       progressIndicator = Stack(
