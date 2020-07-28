@@ -90,6 +90,16 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('pause() has not been implemented.');
   }
 
+    /// turn off closed caption of [this].
+  Future<void> ccOn(int textureId) async {
+    throw UnimplementedError('ccOn() has not been implemented.');
+  }
+
+  /// turn on closed caption of [this].
+  Future<void> ccOff(int textureId) async {
+    throw UnimplementedError('ccOff() has not been implemented.');
+  }
+
   /// Sets the volume to a range between 0.0 and 1.0.
   Future<void> setVolume(int textureId, double volume) {
     throw UnimplementedError('setVolume() has not been implemented.');

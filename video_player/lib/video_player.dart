@@ -419,6 +419,19 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     await _videoPlayerPlatform.setVolume(_textureId, value.volume);
   }
 
+  Future<void> _applyCCOn() async {
+    if (!value.initialized || _isDisposed) {
+      return;
+    }
+    await _videoPlayerPlatform.ccOn(_textureId);
+  }
+  Future<void> _applyCCOff() async {
+    if (!value.initialized || _isDisposed) {
+      return;
+    }
+    await _videoPlayerPlatform.ccOff(_textureId);
+  }
+
   /// The position in the current video.
   Future<Duration> get position async {
     if (_isDisposed) {
@@ -452,6 +465,16 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Future<void> setVolume(double volume) async {
     value = value.copyWith(volume: volume.clamp(0.0, 1.0));
     await _applyVolume();
+  }
+
+  /// turn off closed caption of [this].
+  Future<void> ccOn() async {
+    await _applyCCOn();
+  }
+
+  /// turn on closed caption of [this].
+  Future<void> ccOff() async {
+    await _applyCCOff();
   }
 
   /// The closed caption based on the current [position] in the video.
@@ -761,11 +784,11 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
           maxBuffering = end;
         }
       }
-      double progress = 0.0;
+      double progress = 0.5;
       if (duration != 0) {
         progress = maxBuffering / duration;
       }
-      double positionIndicator = 0.0;
+      double positionIndicator = 0.5;
       if (duration != 0){
         positionIndicator = position / duration;
       }
