@@ -107,6 +107,26 @@ class PositionMessage {
   }
 }
 
+class DurationMessage {
+  int textureId;
+  int duration;
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['textureId'] = textureId;
+    pigeonMap['duration'] = duration;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static DurationMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    final DurationMessage result = DurationMessage();
+    result.textureId = pigeonMap['textureId'];
+    result.duration = pigeonMap['duration'];
+    return result;
+  }
+}
+
 abstract class VideoPlayerApiTest {
   void initialize();
   TextureMessage create(CreateMessage arg);
@@ -361,6 +381,29 @@ class VideoPlayerApi {
           details: error['details']);
     } else {
       return PositionMessage._fromMap(replyMap['result']);
+    }
+  }
+
+
+  Future<DurationMessage> duration(TextureMessage arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.VideoPlayerApi.duration', StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      return DurationMessage._fromMap(replyMap['result']);
     }
   }
 

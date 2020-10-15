@@ -236,6 +236,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   ClosedCaptionFile _closedCaptionFile;
   Timer _timer;
+  Timer _durationTimer;
   bool _isDisposed = false;
   Completer<void> _creatingCompleter;
   StreamSubscription<dynamic> _eventSubscription;
@@ -291,6 +292,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             size: event.size,
           );
           initializingCompleter.complete(null);
+          onInit();
           _applyLooping();
           _applyVolume();
           _applyPlayPause();
@@ -339,6 +341,22 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         .videoEventsFor(_textureId)
         .listen(eventListener, onError: errorListener);
     return initializingCompleter.future;
+  }
+
+  void onInit(){
+      _durationTimer = Timer.periodic(
+      const Duration(milliseconds: 500),
+      (Timer timer) async {
+        if (_isDisposed) {
+          return;
+        }
+        final Duration newDuration = await duration;
+        if (_isDisposed) {
+          return;
+        }
+        value = value.copyWith(duration: newDuration);
+      },
+    );
   }
 
   @override
@@ -425,6 +443,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return null;
     }
     return await _videoPlayerPlatform.getPosition(_textureId);
+  }
+
+    /// The duration in the current video.
+  Future<Duration> get duration async {
+    if (_isDisposed) {
+      return null;
+    }
+    return await _videoPlayerPlatform.getDuration(_textureId);
   }
 
   /// Sets the video's current timestamp to be at [moment]. The next

@@ -84,6 +84,14 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
         await _api.position(TextureMessage()..textureId = textureId);
     return Duration(milliseconds: response.position);
   }
+  
+  @override
+  Future<Duration> getDuration(int textureId) async {
+    DurationMessage response =
+        await _api.duration(TextureMessage()..textureId = textureId);
+    return Duration(milliseconds: response.duration);
+  }
+  
 
   @override
   Stream<VideoEvent> videoEventsFor(int textureId) {

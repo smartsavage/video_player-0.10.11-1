@@ -89,6 +89,7 @@ final class VideoPlayer {
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
     exoPlayer.prepare(mediaSource);
+    
     exoPlayer.addMetadataOutput((MetadataRenderer.Output) metadata -> {
       if (metadata != null && metadata.length() > 0 ) {
         final com.google.android.exoplayer2.metadata.Metadata.Entry entry = metadata.get(0);
@@ -266,6 +267,11 @@ final class VideoPlayer {
   long getPosition() {
     return exoPlayer.getCurrentPosition();
   }
+
+  long getDuration() {
+    return exoPlayer.getDuration();
+  }
+
 
   @SuppressWarnings("SuspiciousNameCombination")
   private void sendInitialized() {

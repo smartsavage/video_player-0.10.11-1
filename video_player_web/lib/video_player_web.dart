@@ -127,6 +127,12 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
     _videoPlayers[textureId].sendBufferingUpdate();
     return _videoPlayers[textureId].getPosition();
   }
+  
+    @override
+  Future<Duration> getDuration(int textureId) async {
+    return _videoPlayers[textureId].getDuration();
+  }
+
 
   @override
   Stream<VideoEvent> videoEventsFor(int textureId) {
