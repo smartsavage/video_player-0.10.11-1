@@ -50,6 +50,17 @@ class _ApiLogger implements VideoPlayerApiTest {
     textureMessage = arg;
   }
 
+
+    /// turn off closed caption of [this].
+  Future<void> ccOn(int textureId) async {
+    throw UnimplementedError('ccOn() has not been implemented.');
+  }
+
+  /// turn on closed caption of [this].
+  Future<void> ccOff(int textureId) async {
+    throw UnimplementedError('ccOff() has not been implemented.');
+  }
+
   @override
   PositionMessage position(TextureMessage arg) {
     log.add('position');

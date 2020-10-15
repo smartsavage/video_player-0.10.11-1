@@ -289,4 +289,34 @@ void FLTVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTVi
       [channel setMessageHandler:nil];
     }
   }
+  {
+    FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VideoPlayerApi.ccOn"
+               binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        FLTTextureMessage *input = [FLTTextureMessage fromMap:message];
+        [api ccOn:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VideoPlayerApi.ccOff"
+               binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        FLTTextureMessage *input = [FLTTextureMessage fromMap:message];
+        [api ccOff:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
 }

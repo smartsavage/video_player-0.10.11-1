@@ -23,7 +23,7 @@ class _App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 2,
         child: Scaffold(
         key: const ValueKey<String>('home_page'),
         appBar: AppBar(
@@ -46,11 +46,9 @@ class _App extends StatelessWidget {
             isScrollable: true,
             tabs: <Widget>[
               Tab(
-                icon: Icon(Icons.cloud),
-                text: "Remote",
+                text: "Live",
               ),
-              Tab(icon: Icon(Icons.insert_drive_file), text: "Asset"),
-              Tab(icon: Icon(Icons.list), text: "List example"),
+              Tab(text: "Archive"),
             ],
           ),
         ),
@@ -58,7 +56,6 @@ class _App extends StatelessWidget {
           children: <Widget>[
             _BumbleBeeRemoteVideo(),
             _ButterFlyAssetVideo(),
-            _ButterFlyAssetVideoInList(),
           ],
         ),
       ),
@@ -66,83 +63,7 @@ class _App extends StatelessWidget {
   }
 }
 
-class _ButterFlyAssetVideoInList extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        _ExampleCard(title: "Item a"),
-        _ExampleCard(title: "Item b"),
-        _ExampleCard(title: "Item c"),
-        _ExampleCard(title: "Item d"),
-        _ExampleCard(title: "Item e"),
-        _ExampleCard(title: "Item f"),
-        _ExampleCard(title: "Item g"),
-        Card(
-            child: Column(children: <Widget>[
-          Column(
-            children: <Widget>[
-              const ListTile(
-                leading: Icon(Icons.cake),
-                title: Text("Video video"),
-              ),
-              Stack(
-                  alignment: FractionalOffset.bottomRight +
-                      const FractionalOffset(-0.1, -0.1),
-                  children: <Widget>[
-                    _ButterFlyAssetVideo(),
-                    Image.asset('assets/flutter-mark-square-64.png'),
-                  ]),
-            ],
-          ),
-        ])),
-        _ExampleCard(title: "Item h"),
-        _ExampleCard(title: "Item i"),
-        _ExampleCard(title: "Item j"),
-        _ExampleCard(title: "Item k"),
-        _ExampleCard(title: "Item l"),
-      ],
-    );
-  }
-}
 
-/// A filler card to show the video in a list of scrolling contents.
-class _ExampleCard extends StatelessWidget {
-  const _ExampleCard({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          ListTile(
-            leading: const Icon(Icons.airline_seat_flat_angled),
-            title: Text(title),
-          ),
-          ButtonBar(
-            children: <Widget>[
-              FlatButton(
-                child: const Text('BUY TICKETS'),
-                onPressed: () {
-                  /* ... */
-                },
-              ),
-              FlatButton(
-                child: const Text('SELL TICKETS'),
-                onPressed: () {
-                  /* ... */
-                },
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _ButterFlyAssetVideo extends StatefulWidget {
   @override
@@ -155,8 +76,9 @@ class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/Butterfly-209.mp4');
-
+    _controller = VideoPlayerController.network(
+      'https://parlvuvod.azureedge.net/pvvodhoc-en/_definst_/mp4:azrhoc/archives/PV750/2020/2020-06-23/33507_AGRI%20Meeting%20No.%2020_10-59-33_VL.mp4/playlist.m3u8'
+    );
     _controller.addListener(() {
       setState(() {});
     });
@@ -176,10 +98,7 @@ class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          Container(
-            padding: const EdgeInsets.only(top: 20.0),
-          ),
-          const Text('With assets mp4'),
+          Container(padding: const EdgeInsets.only(top: 20.0)),
           Container(
             padding: const EdgeInsets.all(20),
             child: AspectRatio(
@@ -188,12 +107,14 @@ class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
                 alignment: Alignment.bottomCenter,
                 children: <Widget>[
                   VideoPlayer(_controller),
+                  ClosedCaption(text: _controller.value.subtitle),
                   _PlayPauseOverlay(controller: _controller),
                   VideoProgressIndicator(_controller, allowScrubbing: true),
                 ],
               ),
             ),
           ),
+          ClosedCaption(text: _controller.value.metadata),
         ],
       ),
     );
@@ -251,7 +172,6 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                   VideoPlayer(_controller),
                   ClosedCaption(text: _controller.value.subtitle),
                   _PlayPauseOverlay(controller: _controller),
-                  VideoProgressIndicator(_controller, allowScrubbing: true),
                 ],
               ),
             ),
