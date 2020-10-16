@@ -40,6 +40,11 @@ static NSDictionary *wrapResult(NSDictionary *result, FlutterError *error) {
 + (FLTPositionMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
+@end
+@interface FLTDurationMessage ()
++ (FLTDurationMessage *)fromMap:(NSDictionary *)dict;
+- (NSDictionary *)toMap;
+@end
 
 @implementation FLTTextureMessage
 + (FLTTextureMessage *)fromMap:(NSDictionary *)dict {
@@ -154,6 +159,29 @@ static NSDictionary *wrapResult(NSDictionary *result, FlutterError *error) {
 }
 @end
 
+
+@implementation FLTDurationMessage
++ (FLTDurationMessage *)fromMap:(NSDictionary *)dict {
+  FLTDurationMessage *result = [[FLTDurationMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.duration = dict[@"duration"];
+  if ((NSNull *)result.duration == [NSNull null]) {
+    result.duration = nil;
+  }
+  return result;
+}
+- (NSDictionary *)toMap {
+  return [NSDictionary
+      dictionaryWithObjectsAndKeys:(self.textureId != nil ? self.textureId : [NSNull null]),
+                                   @"textureId",
+                                   (self.duration != nil ? self.duration : [NSNull null]),
+                                   @"duration", nil];
+}
+@end
+
 void FLTVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTVideoPlayerApi> api) {
   {
     FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
@@ -253,6 +281,21 @@ void FLTVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTVi
         FlutterError *error;
         FLTTextureMessage *input = [FLTTextureMessage fromMap:message];
         FLTPositionMessage *output = [api position:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VideoPlayerApi.duration"
+               binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        FLTTextureMessage *input = [FLTTextureMessage fromMap:message];
+        FLTDurationMessage *output = [api duration:input error:&error];
         callback(wrapResult([output toMap], error));
       }];
     } else {
