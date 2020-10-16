@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class FLTLoopingMessage;
 @class FLTVolumeMessage;
 @class FLTPositionMessage;
+@class FLTDurationMessage;
 
 @interface FLTTextureMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber *textureId;
@@ -39,6 +40,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) NSNumber *position;
 @end
 
+@interface FLTDurationMessage : NSObject
+@property(nonatomic, strong, nullable) NSNumber *textureId;
+@property(nonatomic, strong, nullable) NSNumber *duration;
+@end
+
+
 @protocol FLTVideoPlayerApi
 - (void)initialize:(FlutterError *_Nullable *_Nonnull)error;
 - (nullable FLTTextureMessage *)create:(FLTCreateMessage *)input
@@ -48,6 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setVolume:(FLTVolumeMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)play:(FLTTextureMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
 - (nullable FLTPositionMessage *)position:(FLTTextureMessage *)input
+                                    error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable FLTDurationMessage *)duration:(FLTTextureMessage *)input
                                     error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)seekTo:(FLTPositionMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)pause:(FLTTextureMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
