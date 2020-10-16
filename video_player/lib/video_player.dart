@@ -78,6 +78,7 @@ class VideoPlayerValue {
 
   /// The current volume of the playback.
   final double volume;
+
   /// The current subtitle of the playback.
   final String subtitle;
 
@@ -292,7 +293,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             size: event.size,
           );
           initializingCompleter.complete(null);
-          onInit();
+          _onInit();
           _applyLooping();
           _applyVolume();
           _applyPlayPause();
@@ -343,8 +344,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     return initializingCompleter.future;
   }
 
-  void onInit(){
-      _durationTimer = Timer.periodic(
+  void _onInit() {
+    _durationTimer = Timer.periodic(
       const Duration(milliseconds: 500),
       (Timer timer) async {
         if (_isDisposed) {
@@ -445,7 +446,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     return await _videoPlayerPlatform.getPosition(_textureId);
   }
 
-    /// The duration in the current video.
+  /// The duration in the current video.
   Future<Duration> get duration async {
     if (_isDisposed) {
       return null;
@@ -792,7 +793,7 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
         progress = maxBuffering / duration;
       }
       double positionIndicator = 0.0;
-      if (duration != 0){
+      if (duration != 0) {
         positionIndicator = position / duration;
       }
 

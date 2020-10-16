@@ -55,7 +55,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 
 static void* timeRangeContext = &timeRangeContext;
 static void* statusContext = &statusContext;
-static void* ccContext = &ccContext;
+static void* metadataContext = &metadataContext;
 static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void* playbackBufferFullContext = &playbackBufferFullContext;
@@ -90,7 +90,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   [item addObserver:self
          forKeyPath:@"timedMetadata"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
-            context:ccContext];
+            context:metadataContext];
   // Add an observer that will respond to itemDidPlayToEndTime
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(itemDidPlayToEndTime:)
@@ -291,7 +291,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     if (_eventSink != nil) {
       _eventSink(@{@"event" : @"bufferingEnd"});
     }
-  } else if (context == ccContext) {
+  } else if (context == metadataContext) {
     if (_eventSink != nil) {
       AVPlayerItem* item = (AVPlayerItem*)object;
       for (AVMetadataItem* metadata in item.timedMetadata)
@@ -429,7 +429,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
                                 context:playbackBufferFullContext];
   [[_player currentItem] removeObserver:self
                              forKeyPath:@"timedMetadata"
-                                context:ccContext];
+                                context:metadataContext];
   [_player replaceCurrentItemWithPlayerItem:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
