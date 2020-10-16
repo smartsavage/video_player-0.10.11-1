@@ -54,16 +54,12 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 @end
 
 static void* timeRangeContext = &timeRangeContext;
-static void* ccContext = &ccContext;
 static void* statusContext = &statusContext;
 static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void* playbackBufferFullContext = &playbackBufferFullContext;
 
 @implementation FLTVideoPlayer
-dispatch_queue_t _legibleQueue;
-AVPlayerItemLegibleOutput *_legibleOutput;
-
 - (instancetype)initWithAsset:(NSString*)asset frameUpdater:(FLTFrameUpdater*)frameUpdater {
   NSString* path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
   return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater];
@@ -90,10 +86,7 @@ AVPlayerItemLegibleOutput *_legibleOutput;
          forKeyPath:@"playbackBufferFull"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackBufferFullContext];
-  [item addObserver:self
-         forKeyPath:@"timedMetadata"
-            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
-            context:ccContext];
+
   // Add an observer that will respond to itemDidPlayToEndTime
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(itemDidPlayToEndTime:)
@@ -110,12 +103,6 @@ AVPlayerItemLegibleOutput *_legibleOutput;
       _eventSink(@{@"event" : @"completed"});
     }
   }
-}
-
-- (void)legibleOutput:(AVPlayerItemLegibleOutput *)output didOutputAttributedStrings:(NSArray *)attributedStrings nativeSampleBuffers:(NSArray *)nativeSampleBuffers forItemTime:(CMTime)itemTime
-{
-    NSLog(@"cc :%@", attributedStrings[0]);
-
 }
 
 static inline CGFloat radiansToDegrees(CGFloat radians) {
@@ -247,7 +234,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   [self addObservers:item];
 
   [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ] completionHandler:assetCompletionHandler];
-  _player.appliesMediaSelectionCriteriaAutomatically = false;
 
   return self;
 }
@@ -258,7 +244,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
                        context:(void*)context {
   if (context == timeRangeContext) {
     if (_eventSink != nil) {
-      //NSLog(@"observeValueForKeyPath1");
       NSMutableArray<NSArray<NSNumber*>*>* values = [[NSMutableArray alloc] init];
       for (NSValue* rangeValue in [object loadedTimeRanges]) {
         CMTimeRange range = [rangeValue CMTimeRangeValue];
@@ -271,10 +256,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     AVPlayerItem* item = (AVPlayerItem*)object;
     switch (item.status) {
       case AVPlayerItemStatusFailed:
-        NSLog(@"observeValueForKeyPath AVPlayerItemStatusFailed");
-        //NSString errorString = [item.error description];
-        NSLog(@"error:%@", [item.error description]);
-        NSLog(@"error:%@", [item errorLog]);
         if (_eventSink != nil) {
           _eventSink([FlutterError
               errorWithCode:@"VideoError"
@@ -284,23 +265,14 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         }
         break;
       case AVPlayerItemStatusUnknown:
-        NSLog(@"observeValueForKeyPath AVPlayerItemStatusUnknown");
         break;
       case AVPlayerItemStatusReadyToPlay:
-        NSLog(@"observeValueForKeyPath AVPlayerItemStatusReadyToPlay");
-        //init AVPlayerItemLegibleOutput
-        _legibleQueue = dispatch_queue_create("legible queue", DISPATCH_QUEUE_SERIAL);
-        _legibleOutput = [[AVPlayerItemLegibleOutput alloc] init];
-        [_legibleOutput setDelegate:self queue:_legibleQueue];
-        _legibleOutput.suppressesPlayerRendering = true;
-        [item addOutput:_legibleOutput];
         [item addOutput:_videoOutput];
         [self sendInitialized];
         [self updatePlayingState];
         break;
     }
   } else if (context == playbackLikelyToKeepUpContext) {
-    NSLog(@"observeValueForKeyPath bufferingEnd");
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
       [self updatePlayingState];
       if (_eventSink != nil) {
@@ -308,26 +280,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       }
     }
   } else if (context == playbackBufferEmptyContext) {
-    NSLog(@"observeValueForKeyPath bufferingStart");
     if (_eventSink != nil) {
       _eventSink(@{@"event" : @"bufferingStart"});
     }
   } else if (context == playbackBufferFullContext) {
-    NSLog(@"observeValueForKeyPath bufferingEnd1");
     if (_eventSink != nil) {
       _eventSink(@{@"event" : @"bufferingEnd"});
-    }
-  } else if (context == ccContext) {
-    if (_eventSink != nil) {
-      AVPlayerItem* item = (AVPlayerItem*)object;
-      for (AVMetadataItem* metadata in item.timedMetadata)
-      {
-        if (![metadata.value isKindOfClass:[NSString class]]){
-          continue;
-        }
-        //NSLog(@"timedmetadata:%@", metadata.stringValue);
-        _eventSink(@{@"event" : @"metadata", @"values" : metadata.stringValue});
-      }
     }
   }
 }
@@ -378,20 +336,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 - (void)pause {
   _isPlaying = false;
   [self updatePlayingState];
-}
-- (void)ccOn {
-  NSLog(@"ccon 1");
-  //_player.closedCaptionDisplayEnabled = true;
-  AVMediaSelectionGroup *group = [_player.currentItem.asset mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicLegible];
-  NSLog(@"cc option:%@", group.options[0]);
-  [_player.currentItem  selectMediaOption:group.options[0] inMediaSelectionGroup:group];
-}
-
-- (void)ccOff {
-  NSLog(@"ccoff 1");
-  AVMediaSelectionGroup *group = [_player.currentItem.asset mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicLegible];
-  [_player.currentItem  selectMediaOption:nil inMediaSelectionGroup:group];
-
 }
 
 - (int64_t)position {
@@ -467,10 +411,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   [[_player currentItem] removeObserver:self
                              forKeyPath:@"playbackBufferFull"
                                 context:playbackBufferFullContext];
-  [[_player currentItem] removeObserver:self
-                             forKeyPath:@"timedMetadata"
-                                context:ccContext];
-
   [_player replaceCurrentItemWithPlayerItem:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -618,7 +558,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   return result;
 }
 
-
 - (void)seekTo:(FLTPositionMessage*)input error:(FlutterError**)error {
   FLTVideoPlayer* player = _players[input.textureId];
   [player seekTo:[input.position intValue]];
@@ -629,16 +568,4 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   [player pause];
 }
 
-- (void)ccOn:(FLTTextureMessage*)input error:(FlutterError**)error {
-  FLTVideoPlayer* player = _players[input.textureId];
-  NSLog(@"CC on");
-  [player ccOn];
-}
-
-- (void)ccOff:(FLTTextureMessage*)input error:(FlutterError**)error {
-  FLTVideoPlayer* player = _players[input.textureId];
-  NSLog(@"CC off");
-  [player ccOff];
-
-}
 @end

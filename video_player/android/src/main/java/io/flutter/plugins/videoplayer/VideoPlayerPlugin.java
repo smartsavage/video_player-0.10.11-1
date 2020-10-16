@@ -178,17 +178,6 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
     player.pause();
   }
 
-
-  public void ccOn(TextureMessage arg)
-  {
-
-  }
-    
-  public void ccOff(TextureMessage arg)
-  {
-
-  }
-
   private interface KeyForAssetFn {
     String get(String asset);
   }

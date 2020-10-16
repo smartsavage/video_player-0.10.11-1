@@ -45,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) NSNumber *duration;
 @end
 
+
 @protocol FLTVideoPlayerApi
 - (void)initialize:(FlutterError *_Nullable *_Nonnull)error;
 - (nullable FLTTextureMessage *)create:(FLTCreateMessage *)input
@@ -57,11 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
                                     error:(FlutterError *_Nullable *_Nonnull)error;
 - (nullable FLTDurationMessage *)duration:(FLTTextureMessage *)input
                                     error:(FlutterError *_Nullable *_Nonnull)error;
-
 - (void)seekTo:(FLTPositionMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)pause:(FLTTextureMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)ccOn:(FLTTextureMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
-- (void)ccOff:(FLTTextureMessage *)input error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FLTVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger,

@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 
 #import <Flutter/Flutter.h>
-#import <AVFoundation/AVFoundation.h>
-@interface FLTVideoPlayerPlugin : NSObject <FlutterPlugin,AVPlayerItemLegibleOutputPushDelegate>
+
+@interface FLTVideoPlayerPlugin : NSObject <FlutterPlugin>
 @end

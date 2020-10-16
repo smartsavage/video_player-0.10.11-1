@@ -64,18 +64,6 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
     return _api.pause(TextureMessage()..textureId = textureId);
   }
 
-    /// turn off closed caption of [this].
-  @override
-  Future<void> ccOn(int textureId) async {
-    return _api.ccOn(TextureMessage()..textureId = textureId);
-  }
-
-  /// turn on closed caption of [this].
-  @override
-  Future<void> ccOff(int textureId) async {
-    return _api.ccOff(TextureMessage()..textureId = textureId);
-  }
-
   @override
   Future<void> setVolume(int textureId, double volume) {
     return _api.setVolume(VolumeMessage()

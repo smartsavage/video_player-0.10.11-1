@@ -288,10 +288,6 @@ public class Messages {
 
     void pause(TextureMessage arg);
 
-    void ccOn(TextureMessage arg);
-    
-    void ccOff(TextureMessage arg);
-
     /** Sets up an instance of `VideoPlayerApi` to handle messages through the `binaryMessenger` */
     public static void setup(BinaryMessenger binaryMessenger, VideoPlayerApi api) {
       {

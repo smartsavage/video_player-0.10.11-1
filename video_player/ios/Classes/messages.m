@@ -40,12 +40,10 @@ static NSDictionary *wrapResult(NSDictionary *result, FlutterError *error) {
 + (FLTPositionMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
-@end
 @interface FLTDurationMessage ()
 + (FLTDurationMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
-
 @implementation FLTTextureMessage
 + (FLTTextureMessage *)fromMap:(NSDictionary *)dict {
   FLTTextureMessage *result = [[FLTTextureMessage alloc] init];
@@ -158,7 +156,6 @@ static NSDictionary *wrapResult(NSDictionary *result, FlutterError *error) {
                                    @"position", nil];
 }
 @end
-
 
 @implementation FLTDurationMessage
 + (FLTDurationMessage *)fromMap:(NSDictionary *)dict {
@@ -326,36 +323,6 @@ void FLTVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTVi
         FlutterError *error;
         FLTTextureMessage *input = [FLTTextureMessage fromMap:message];
         [api pause:input error:&error];
-        callback(wrapResult(nil, error));
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.VideoPlayerApi.ccOn"
-               binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTTextureMessage *input = [FLTTextureMessage fromMap:message];
-        [api ccOn:input error:&error];
-        callback(wrapResult(nil, error));
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel = [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.VideoPlayerApi.ccOff"
-               binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        FLTTextureMessage *input = [FLTTextureMessage fromMap:message];
-        [api ccOff:input error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {

@@ -37,8 +37,6 @@ abstract class VideoPlayerApi {
   PositionMessage position(TextureMessage msg);
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
-  void ccOn(TextureMessage msg);
-  void ccOff(TextureMessage msg);
 }
 
 void configurePigeon(PigeonOptions opts) {
