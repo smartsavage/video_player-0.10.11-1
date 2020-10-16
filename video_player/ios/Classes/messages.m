@@ -40,7 +40,6 @@ static NSDictionary *wrapResult(NSDictionary *result, FlutterError *error) {
 + (FLTPositionMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
-@end
 @interface FLTDurationMessage ()
 + (FLTDurationMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
