@@ -239,6 +239,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Timer _timer;
   Timer _durationTimer;
   bool _isDisposed = false;
+  bool _isIOSLive = false;
   Completer<void> _creatingCompleter;
   StreamSubscription<dynamic> _eventSubscription;
   _VideoAppLifeCycleObserver _lifeCycleObserver;
@@ -303,7 +304,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           _timer?.cancel();
           break;
         case VideoEventType.bufferingUpdate:
-          value = value.copyWith(buffered: event.buffered);
+          if (event.buffered.length > 0 && _isIOSLive == true) {
+            value = value.copyWith(
+                buffered: event.buffered, duration: event.buffered[0].end);
+          } else {
+            value = value.copyWith(buffered: event.buffered);
+          }
           break;
         case VideoEventType.bufferingStart:
           value = value.copyWith(isBuffering: true);
@@ -345,19 +351,23 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   void _onInit() {
-    _durationTimer = Timer.periodic(
-      const Duration(milliseconds: 500),
-      (Timer timer) async {
-        if (_isDisposed) {
-          return;
-        }
-        final Duration newDuration = await duration;
-        if (_isDisposed) {
-          return;
-        }
-        value = value.copyWith(duration: newDuration);
-      },
-    );
+    if (value.duration.inMilliseconds == 0) {
+      _isIOSLive = true;
+    } else {
+      _durationTimer = Timer.periodic(
+        const Duration(milliseconds: 1000),
+        (Timer timer) async {
+          if (_isDisposed) {
+            return;
+          }
+          final Duration newDuration = await duration;
+          if (_isDisposed) {
+            return;
+          }
+          value = value.copyWith(duration: newDuration);
+        },
+      );
+    }
   }
 
   @override
