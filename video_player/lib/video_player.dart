@@ -307,6 +307,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           if (event.buffered.length > 0 && _isIOSLive == true) {
             value = value.copyWith(
                 buffered: event.buffered, duration: event.buffered[0].end);
+            //print("start:${event.buffered[0].start} end:${event.buffered[0].end}");
           } else {
             value = value.copyWith(buffered: event.buffered);
           }
