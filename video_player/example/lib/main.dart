@@ -24,7 +24,7 @@ class _App extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
-        child: Scaffold(
+      child: Scaffold(
         key: const ValueKey<String>('home_page'),
         appBar: AppBar(
           title: const Text('Video player example'),
@@ -218,8 +218,9 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(
-      'https://parlvulive-dt.azureedge.net/HOC230-X-1/Test/VL/EN/Playlist.m3u8'
-    );
+        'https://parlvulive-dt.azureedge.net/HOC230-X-1/Test/VL/EN/Playlist.m3u8');
+//    _controller = VideoPlayerController.network(
+//        'https://parlvuvod.azureedge.net/pvvodhoc-en/_definst_/mp4:azrhoc/archives/PV750/2020/2020-11-06/34193_HESA%20Meeting%20No.%205_14-51-37_VL.mp4/playlist.m3u8?audioindex=1&wowzalanguage=eng');
 
     _controller.addListener(() {
       setState(() {});

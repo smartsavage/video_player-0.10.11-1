@@ -321,7 +321,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           value = value.copyWith(metadata: event.value);
           break;
         case VideoEventType.subtitle:
-          value = value.copyWith(metadata: event.value);
+          value = value.copyWith(subtitle: event.value);
           break;
         case VideoEventType.unknown:
           break;
