@@ -35,7 +35,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 }
 @end
 
-@interface FLTVideoPlayer : NSObject <FlutterTexture, FlutterStreamHandler>
+@interface FLTVideoPlayer : NSObject <FlutterTexture, FlutterStreamHandler, AVPlayerItemLegibleOutputPushDelegate>
 @property(readonly, nonatomic) AVPlayer* player;
 @property(readonly, nonatomic) AVPlayerItemVideoOutput* videoOutput;
 @property(readonly, nonatomic) CADisplayLink* displayLink;
@@ -51,6 +51,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 - (void)pause;
 - (void)setIsLooping:(bool)isLooping;
 - (void)updatePlayingState;
+
 @end
 
 static void* timeRangeContext = &timeRangeContext;
@@ -64,6 +65,19 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 - (instancetype)initWithAsset:(NSString*)asset frameUpdater:(FLTFrameUpdater*)frameUpdater {
   NSString* path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
   return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater];
+}
+
+- (void)legibleOutput:(AVPlayerItemLegibleOutput *)output 
+  didOutputAttributedStrings:(NSArray<NSAttributedString *> *)strings 
+  nativeSampleBuffers:(NSArray *)nativeSamples 
+          forItemTime:(CMTime)itemTime {
+  NSLog(@"legibleOutput called");
+
+  for (NSAttributedString* cc in strings) {
+    NSLog(@"cc:%@", cc);
+    _eventSink(@{@"event" : @"subtitle", @"values" : [cc string]});
+  }
+
 }
 
 - (void)addObservers:(AVPlayerItem*)item {
@@ -234,6 +248,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
 
   [self createVideoOutputAndDisplayLink:frameUpdater];
+  //init AVPlayerItemLegibleOutput
+  AVPlayerItemLegibleOutput *output = [[AVPlayerItemLegibleOutput alloc] init];
+  [output setDelegate:self queue:dispatch_get_main_queue()];
+  [output setSuppressesPlayerRendering:true];
+  [[_player currentItem] addOutput:output];
+  NSLog(@"init AVPlayerItemLegibleOutput");
 
   [self addObservers:item];
 
@@ -274,6 +294,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         [item addOutput:_videoOutput];
         [self sendInitialized];
         [self updatePlayingState];
+
         break;
     }
   } else if (context == playbackLikelyToKeepUpContext) {
