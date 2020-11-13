@@ -240,6 +240,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Timer _durationTimer;
   bool _isDisposed = false;
   bool _isIOSLive = false;
+  Duration initDuration;
+  Stopwatch stopwatch = null;
   Completer<void> _creatingCompleter;
   StreamSubscription<dynamic> _eventSubscription;
   _VideoAppLifeCycleObserver _lifeCycleObserver;
@@ -305,8 +307,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           break;
         case VideoEventType.bufferingUpdate:
           if (event.buffered.length > 0 && _isIOSLive == true) {
+            if (stopwatch == null) {
+              initDuration = event.buffered[0].end;
+              stopwatch = new Stopwatch();
+              stopwatch.start();
+            }
             value = value.copyWith(
-                buffered: event.buffered, duration: event.buffered[0].end);
+                buffered: event.buffered,
+                duration: initDuration + stopwatch.elapsed);
             //print("start:${event.buffered[0].start} end:${event.buffered[0].end}");
           } else {
             value = value.copyWith(buffered: event.buffered);
