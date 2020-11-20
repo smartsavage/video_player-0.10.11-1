@@ -315,7 +315,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             value = value.copyWith(
                 buffered: event.buffered,
                 duration: initDuration + stopwatch.elapsed);
-            //print("start:${event.buffered[0].start} end:${event.buffered[0].end}");
+            final now = new DateTime.now();
+            print("duration:${value.duration} position:${value.position} elapsed:${stopwatch.elapsed} end:${event.buffered[0].end} initDuration:${initDuration} start:${event.buffered[0].start} systime:${now.hour}:${now.minute}:${now.second}");
           } else {
             value = value.copyWith(buffered: event.buffered);
           }
@@ -487,6 +488,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     } else if (position < const Duration()) {
       position = const Duration();
     }
+    print("seek to:${position}");
     await _videoPlayerPlatform.seekTo(_textureId, position);
     _updatePosition(position);
   }
